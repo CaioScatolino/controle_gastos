@@ -1,0 +1,14 @@
+import { mysqlTable, varchar, timestamp, int } from "drizzle-orm/mysql-core";
+
+export const users = mysqlTable('users', {
+    id: int('id').autoincrement().primaryKey(),
+    name: varchar('name', { length: 255 }).notNull(),
+    email: varchar('email', { length: 255 }).notNull().unique(),
+    password: varchar('password', { length: 255 }).notNull(),
+    avatar: varchar('avatar', { length: 255 }).notNull(),
+    created_at: timestamp('created_at').defaultNow(),
+    updated_at: timestamp('updated_at').defaultNow().onUpdateNow(),
+})
+
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
