@@ -9,4 +9,6 @@ router.get("/", expenseController.getAllExpenses);
 
 router.get("/:id", expenseController.getExpenseById);
 
+router.put("/:id", expenseController.updateExpense);
+
 export default router;

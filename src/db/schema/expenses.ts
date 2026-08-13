@@ -16,3 +16,4 @@ export const expenses = mysqlTable('expenses', {
 
 export type Expense = typeof expenses.$inferSelect;
 export type NewExpense = typeof expenses.$inferInsert;
+export type UpdateExpense = Partial<NewExpense>;

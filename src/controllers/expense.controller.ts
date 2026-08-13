@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { createExpenseSchema } from "../validators/expense.validator";
+import { createExpenseSchema, updateExpenseSchema } from "../validators/expense.validator";
 import * as expenseService from "../services/expense.service";
 
 export const createExpense: RequestHandler = async (req, res) => {
@@ -53,4 +53,25 @@ export const getExpenseById: RequestHandler = async (req, res) => {
     }
 
     return res.status(200).json({error: null, data: expenseData});
+}
+
+export const updateExpense: RequestHandler = async (req, res) => {
+    const { id } = req.params;
+    const data = updateExpenseSchema.parse(req.body);
+
+    if (!req.userId) {
+        return res.status(401).json({error: "Usuario nao autenticado", data: null})
+    }
+
+    if (!id) {
+        return res.status(400).json({error: "ID da despesa nao fornecido", data: null})
+    }
+
+    const updatedExpense = await expenseService.updateExpense(Number(id), data);
+
+    if (!updatedExpense) {
+        return res.status(400).json({error: "Não foi possivel atualizar a despesa", data: null})
+    }
+
+    return res.status(200).json({error: null, data: updatedExpense});
 }

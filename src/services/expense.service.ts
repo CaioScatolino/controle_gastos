@@ -1,6 +1,8 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db/connection";
-import { expenses, NewExpense } from "../db/schema";
+import { expenses, NewExpense, UpdateExpense } from "../db/schema";
+
+//======================== FUNÇÕES RELACIONADAS AO CREATE DE DESPESAS ========================
 
 export const createExpense = async (data: NewExpense) => {
   if (!data) {
@@ -35,6 +37,8 @@ export const createExpense = async (data: NewExpense) => {
   }
 };
 
+//======================== FUNÇÕES RELACIONADAS AO READ DE DESPESAS ========================
+
 export const getAllExpenses = async (user_id: number) => {
   if (!user_id) {
     return null;
@@ -48,17 +52,48 @@ export const getAllExpenses = async (user_id: number) => {
   return userAllExpenses;
 };
 
-export const getExpenseById = async (id:number) => {
-    if (!id)
-    {
-        return null;
-    }
+export const getExpenseById = async (id: number) => {
+  if (!id) {
+    return null;
+  }
 
-    const expense = await db
+  const expense = await db
     .select()
     .from(expenses)
     .where(eq(expenses.id, id))
     .limit(1);
 
-    return expense;
-}
+  return expense;
+};
+
+//======================== FUNÇÕES RELACIONADAS AO UPDATE DE DESPESAS ========================
+
+export const updateExpense = async (id: number, data: UpdateExpense) => {
+  if (!id || !data) {
+    return null;
+  }
+
+  const updateExpenseData: UpdateExpense = {
+    description: data.description,
+    value: data.value,
+    type: data.type,
+    category: data.category,
+    expense_date: data.expense_date
+  };
+
+  try {
+    await db.update(expenses).set(updateExpenseData).where(eq(expenses.id, id));
+
+    const updatedExpense = await getExpenseById(id);
+
+    if (!updatedExpense) {
+      return null;
+    }
+
+    return updatedExpense;
+  } catch {
+    return null;
+  }
+};
+
+//======================== FUNÇÕES RELACIONADAS AO DELETE DE DESPESAS ========================
