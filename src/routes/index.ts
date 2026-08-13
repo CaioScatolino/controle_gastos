@@ -1,16 +1,22 @@
-import { Router, Request, Response } from 'express';
-import userRouter from './user.routes';
+import { Router, Request, Response } from "express";
+import userRouter from "./user.routes";
+import authRouter from "./auth.routes";
+import { privateRoute } from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.get('/ping', (req: Request, res: Response) => {
-    res.json({ pong: true });
+router.get("/ping", (req: Request, res: Response) => {
+  res.json({ pong: true });
 });
 
-router.get('/', (req: Request, res: Response) => {
-    res.send('Hello World!');
+router.get("/", (req: Request, res: Response) => {
+  res.send("Hello World!");
 });
 
-router.use('/users', userRouter);
+router.use("/auth", authRouter);
+
+router.use("/users", userRouter);
+
+router.use(privateRoute);
 
 export default router;

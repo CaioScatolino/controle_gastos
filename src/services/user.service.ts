@@ -34,6 +34,26 @@ export const createUser = async (data: NewUser) => {
   return formattedUser;
 };
 
+export const login = async (email: string, hashedPassword: string) => {
+
+  const user = await getUserByEmail(email)
+
+  if (!user) {
+    throw new Error("Usuário não encontrado");
+  }
+
+  const passwordMatch = await bcrypt.compare(hashedPassword, user.password);
+
+  if (!passwordMatch) {
+    throw new Error("Senha incorreta");
+  }
+
+  const formattedUser = await formatUser(user);
+
+  return formattedUser;
+
+}
+
 //======= FUNÇÕES AUXILIARES =======
 
 export const getUserByEmail = async (email: string) => {
