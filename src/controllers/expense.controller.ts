@@ -28,3 +28,29 @@ export const getAllExpenses: RequestHandler = async (req, res) => {
 
     return res.status(200).json({ error: null, data: expenses });
 };
+
+export const getExpenseById: RequestHandler = async (req, res) => {
+    const { id } = req.params;
+
+    if (!req.userId) {
+        return res.status(401).json({error: "Usuario nao autenticado", data: null})
+    }
+
+    if (!id) {
+        return res.status(400).json({error: "ID da despesa não fornecido", data: null})
+    }
+
+    const expense = await expenseService.getExpenseById(Number(id));
+
+    if (!expense) {
+        return res.status(404).json({error: "Despesa não encontrada", data: null})
+    }
+
+    const [expenseData] = expense;
+
+    if (expenseData.user_id !== req.userId) {
+        return res.status(403).json({error: "Usuario nao autorizado", data: null})
+    }
+
+    return res.status(200).json({error: null, data: expenseData});
+}

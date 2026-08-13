@@ -47,3 +47,18 @@ export const getAllExpenses = async (user_id: number) => {
 
   return userAllExpenses;
 };
+
+export const getExpenseById = async (id:number) => {
+    if (!id)
+    {
+        return null;
+    }
+
+    const expense = await db
+    .select()
+    .from(expenses)
+    .where(eq(expenses.id, id))
+    .limit(1);
+
+    return expense;
+}
