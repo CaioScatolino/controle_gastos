@@ -11,4 +11,6 @@ router.get("/:id", expenseController.getExpenseById);
 
 router.put("/:id", expenseController.updateExpense);
 
+router.patch("/:id/status", expenseController.deleteExpense);
+
 export default router;

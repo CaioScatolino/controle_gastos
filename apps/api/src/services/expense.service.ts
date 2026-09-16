@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "../db/connection";
 import { expenses, NewExpense, UpdateExpense } from "../db/schema";
 
@@ -47,7 +47,8 @@ export const getAllExpenses = async (user_id: number) => {
   const userAllExpenses = await db
     .select()
     .from(expenses)
-    .where(eq(expenses.user_id, user_id));
+    .where(and(eq(expenses.user_id, user_id), eq(expenses.status, true)))
+    .orderBy(expenses.expense_date);
 
   return userAllExpenses;
 };
@@ -78,7 +79,7 @@ export const updateExpense = async (id: number, data: UpdateExpense) => {
     value: data.value,
     type: data.type,
     category: data.category,
-    expense_date: data.expense_date
+    expense_date: data.expense_date,
   };
 
   try {
@@ -97,3 +98,19 @@ export const updateExpense = async (id: number, data: UpdateExpense) => {
 };
 
 //======================== FUNÇÕES RELACIONADAS AO DELETE DE DESPESAS ========================
+
+export const deleteExpense = async (id: number, user_id: number) => {
+  if (!id || !user_id) {
+    return null;
+  }
+
+  try {
+    await db
+      .update(expenses)
+      .set({ status: false })
+      .where(and(eq(expenses.id, id), eq(expenses.user_id, user_id)));
+    return true;
+  } catch {
+    return null;
+  }
+};
