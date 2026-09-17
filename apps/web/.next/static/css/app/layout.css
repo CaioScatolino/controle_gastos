@@ -1186,6 +1186,9 @@ video {
   --tw-placeholder-opacity: 1;
   color: rgb(100 116 139 / var(--tw-placeholder-opacity, 1));
 }
+.opacity-60 {
+  opacity: 0.6;
+}
 .shadow-2xl {
   --tw-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
   --tw-shadow-colored: 0 25px 50px -12px var(--tw-shadow-color);
@@ -1358,6 +1361,9 @@ body {
 }
 .hover\:underline:hover {
   text-decoration-line: underline;
+}
+.hover\:opacity-100:hover {
+  opacity: 1;
 }
 .focus\:border-brand-500:focus {
   --tw-border-opacity: 1;
