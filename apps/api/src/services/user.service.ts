@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db/connection";
-import { NewUser, User, users } from "../db/schema";
+import { NewUser, outbox_users, User, users } from "../db/schema";
 import bcrypt from "bcrypt";
 
 export const createUser = async (data: NewUser) => {
@@ -27,7 +27,14 @@ export const createUser = async (data: NewUser) => {
 
   const createdUserId = result[0].id;
 
-  const [createdUser] = await db.select().from(users).where(eq(users.id, createdUserId)).limit(1)
+  // Passo 4 -> Inerir na outbox users para futura mensageria, notificações, etc.
+  await insertOutboxUser(createdUserId, "USER_CREATED", newUser);
+
+  const [createdUser] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, createdUserId))
+    .limit(1);
 
   const formattedUser = await formatUser(createdUser);
 
@@ -35,8 +42,7 @@ export const createUser = async (data: NewUser) => {
 };
 
 export const login = async (email: string, hashedPassword: string) => {
-
-  const user = await getUserByEmail(email)
+  const user = await getUserByEmail(email);
 
   if (!user) {
     throw new Error("Usuário não encontrado");
@@ -51,8 +57,7 @@ export const login = async (email: string, hashedPassword: string) => {
   const formattedUser = await formatUser(user);
 
   return formattedUser;
-
-}
+};
 
 //======= FUNÇÕES AUXILIARES =======
 
@@ -77,11 +82,21 @@ export const hashPassword = async (password: string) => {
 };
 
 export const formatUser = async (user: User) => {
- 
-    const {password, ...rest} = user;
+  const { password, ...rest } = user;
 
-    if (rest.avatar) {
-        rest.avatar = `${process.env.BASE_URL}/static/avatars/${rest.avatar}`;
-    }
-    return rest;
-}
+  if (rest.avatar) {
+    rest.avatar = `${process.env.BASE_URL}/static/avatars/${rest.avatar}`;
+  }
+  return rest;
+};
+
+export const insertOutboxUser = async (user_id: number, type: string, data: NewUser) => {
+  const { password, ...rest } = data;
+
+  await db.insert(outbox_users).values({
+    user_id,
+    type,
+    data: rest,
+    proccessed: false,
+  });
+};
