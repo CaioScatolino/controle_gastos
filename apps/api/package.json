@@ -14,13 +14,16 @@
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "bullmq": "^6.3.6",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "drizzle-orm": "^0.45.1",
     "express": "^5.2.1",
+    "ioredis": "^6.0.0",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.0.2",
     "mysql2": "^3.6.5",
+    "nodemailer": "^10.0.10",
     "sharp": "^0.34.5",
     "zod": "^4.3.5"
   },
@@ -31,6 +34,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
     "@types/node": "^20.10.6",
+    "@types/nodemailer": "^8.0.2",
     "drizzle-kit": "^0.31.8",
     "tsx": "^4.21.0",
     "typescript": "^5.3.3"

@@ -22,22 +22,27 @@ export const createUser = async (data: NewUser) => {
     ...data,
     password: hashedPassword,
   };
-
-  const result = await db.insert(users).values(newUser).$returningId();
-
-  const createdUserId = result[0].id;
-
-  // Passo 4 -> Inerir na outbox users para futura mensageria, notificações, etc.
-  await insertOutboxUser(createdUserId, "USER_CREATED", newUser);
-
-  const [createdUser] = await db
-    .select()
-    .from(users)
-    .where(eq(users.id, createdUserId))
-    .limit(1);
-
+  const createdUser = await db.transaction(async (tx) => {
+    // 1. Insere o usuário
+    const result = await tx.insert(users).values(newUser).$returningId();
+    const createdUserId = result[0].id;
+    // 2. Insere na outbox usando o MESMO 'tx'
+    const { password, ...rest } = newUser;
+    await tx.insert(outbox_users).values({
+      user_id: createdUserId,
+      type: "USER_CREATED",
+      data: rest,
+      processed: false,
+    });
+    // 3. Busca o usuário recém-criado para retornar
+    const [user] = await tx
+      .select()
+      .from(users)
+      .where(eq(users.id, createdUserId))
+      .limit(1);
+    return user;
+  });
   const formattedUser = await formatUser(createdUser);
-
   return formattedUser;
 };
 
@@ -88,15 +93,4 @@ export const formatUser = async (user: User) => {
     rest.avatar = `${process.env.BASE_URL}/static/avatars/${rest.avatar}`;
   }
   return rest;
-};
-
-export const insertOutboxUser = async (user_id: number, type: string, data: NewUser) => {
-  const { password, ...rest } = data;
-
-  await db.insert(outbox_users).values({
-    user_id,
-    type,
-    data: rest,
-    processed: false,
-  });
 };
