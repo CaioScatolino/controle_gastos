@@ -7,7 +7,7 @@ export const outbox_users = mysqlTable('outbox_users', {
     type: varchar('type', { length: 100 }).notNull(),
     data: json('data').notNull(),
     created_at: timestamp('created_at').defaultNow(),
-    proccessed: boolean('proccessed').default(false).notNull(),
+    processed: boolean('processed').default(false).notNull(),
 })
 
 export type OutboxUser = typeof outbox_users.$inferSelect;

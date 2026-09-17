@@ -97,6 +97,6 @@ export const insertOutboxUser = async (user_id: number, type: string, data: NewU
     user_id,
     type,
     data: rest,
-    proccessed: false,
+    processed: false,
   });
 };

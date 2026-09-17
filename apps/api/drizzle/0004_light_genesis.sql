@@ -1,0 +1,1 @@
+ALTER TABLE `outbox_users` CHANGE COLUMN `proccessed` `processed` boolean DEFAULT false NOT NULL;
