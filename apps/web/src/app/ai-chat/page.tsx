@@ -183,6 +183,7 @@ export default function AiChatPage() {
         )}
 
         {/* Estado 1: Se a IA já extraiu os dados (Revisão Humana) */}
+        {/* TODO: Tornar os campos abaixo editáveis (inputs/selects) para permitir que o usuário ajuste valor, descrição, categoria ou data antes de salvar */}
         {extracted ? (
           <div className="my-auto py-2 animate-in fade-in zoom-in-95 duration-200">
             <div className="p-5 rounded-3xl bg-surface border border-surface-border shadow-xl">

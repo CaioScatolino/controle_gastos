@@ -85,3 +85,9 @@ npm run db:studio
 ## 📚 Documentação Passo a Passo (`docs/steps/`)
 Cada decisão técnica, arquitetural e comando executado é documentado detalhadamente:
 - [Step 01: Auditoria e Setup do Monorepo](docs/steps/step-01-auditoria-e-setup-monorepo.md)
+- [Step 02: Migração Monorepo e Setup Next.js](docs/steps/step-02-migracao-monorepo-e-setup-nextjs.md)
+- [Step 03: Refatoração do Dashboard e Componentização](docs/steps/step-03-refatoracao-dashboard-e-componentizacao.md)
+- [Step 04: Mensageria Assíncrona com Redis, BullMQ e Outbox Pattern](docs/steps/step-04-mensageria-redis-bullmq-outbox-pattern.md)
+- [Step 05: Envio de E-mails com Nodemailer e Templates HTML](docs/steps/step-05-envio-de-emails-com-nodemailer-e-templates.md)
+- [Step 06: IA Multimodal com Google Gemini, OCR e Extração Estruturada](docs/steps/step-06-ia-multimodal-gemini-ocr-extracao.md)
+
