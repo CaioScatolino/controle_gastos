@@ -11,12 +11,15 @@ export interface ApiResponse<T = any> {
 
 export async function apiFetch<T = any>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<ApiResponse<T>> {
   const token = authStorage.getToken();
 
+  // Se for FormData (upload de arquivos), não fixa Content-Type para o browser gerar o boundary
+  const isFormData =
+    typeof FormData !== "undefined" && options.body instanceof FormData;
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
     ...((options.headers as Record<string, string>) || {}),
   };
 
@@ -36,8 +39,7 @@ export async function apiFetch<T = any>(
 
     if (!response.ok) {
       return {
-        error:
-          data?.error || `Erro na requisição (Status: ${response.status})`,
+        error: data?.error || `Erro na requisição (Status: ${response.status})`,
         data: null,
         details: data?.details,
       };
@@ -55,7 +57,8 @@ export async function apiFetch<T = any>(
   } catch (err: any) {
     return {
       error:
-        err.message || "Não foi possível conectar à API. Verifique se o servidor está ativo.",
+        err.message ||
+        "Não foi possível conectar à API. Verifique se o servidor está ativo.",
       data: null,
     };
   }

@@ -1,7 +1,8 @@
 import { Router, Request, Response } from "express";
 import userRouter from "./user.routes";
 import authRouter from "./auth.routes";
-import expenseRouter from './expense.routes';
+import expenseRouter from "./expense.routes";
+import aiRouter from "./ai.routes";
 import { privateRoute } from "../middlewares/auth.middleware";
 
 const router = Router();
@@ -20,6 +21,8 @@ router.use("/users", userRouter);
 
 router.use(privateRoute);
 
-router.use('/expenses', expenseRouter)
+router.use("/expenses", expenseRouter);
+
+router.use("/ai", aiRouter);
 
 export default router;
