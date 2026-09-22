@@ -16,4 +16,8 @@ const upload = multer({
 // POST /api/ai/extract -> aceita o arquivo no campo 'file' e o texto no campo 'prompt'
 router.post("/extract", upload.single("file"), aiController.extractExpense);
 
+// POST /api/ai/chat-stream -> Streaming conversacional via SSE
+router.post("/chat-stream", upload.single("file"), aiController.streamChat);
+
+
 export default router;

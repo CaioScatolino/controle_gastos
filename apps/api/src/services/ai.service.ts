@@ -16,6 +16,17 @@ export interface ExtractExpenseInput {
   promptText?: string;
 }
 
+export interface ChatMessage {
+  role: "user" | "model";
+  text: string;
+}
+
+export interface StreamChatInput {
+  fileBuffer?: Buffer;
+  mimeType?: string;
+  message: string;
+  history?: ChatMessage[];
+}
 export const aiService = {
   /**
    * Extrai dados financeiros de uma imagem (comprovante/recibo),
@@ -100,5 +111,103 @@ export const aiService = {
     const validatedData = extractedExpenseSchema.parse(targetData);
 
     return validatedData;
+  },
+  /**
+   * Conversa interativa com streaming SSE.
+   * A IA responde em tempo real e, quando aplicável, gera a despesa estruturada.
+   */
+  async streamChat(
+    input: StreamChatInput,
+    onChunk: (text: string) => void,
+  ): Promise<{ fullText: string; expenseData: ExtractedExpense | null }> {
+    const { fileBuffer, mimeType, message, history = [] } = input;
+
+    const now = new Date();
+    const todayBR = `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}`;
+
+    const systemInstruction = `
+      Você é o assistente financeiro inteligente do app Gastos.AI.
+      Seu objetivo é conversar amigavelmente com o usuário, extrair gastos de fotos de recibos, comprovantes ou mensagens de texto, e ajustar despesas conforme ele solicitar.
+      
+      DATA DE HOJE: ${todayBR}.
+      
+      REGRAS DE CONVERSAÇÃO:
+      - Seja conciso, simpático e direto (respostas de 1 a 3 frases).
+      - Se o usuário enviou uma foto ou informou um gasto, explique resumidamente o que você identificou (estabelecimento, valor, data no formato DD/MM/YYYY e categoria sugerida) e pergunte se a data e os valores estão corretos ou se ele deseja ajustar algo.
+      - Se o usuário pedir alterações ("mude a categoria para Lazer", "desconte 10 reais"), confirme a alteração no texto.
+      - Quando você tiver identificado com clareza os dados da despesa (ou quando o usuário solicitar um ajuste), inclua OBRIGATORIAMENTE no final da sua resposta a tag especial no seguinte formato exato (sem quebras no meio da tag):
+      <<<EXPENSE_DATA:{"description":"Nome do gasto","value":50.00,"type":"Despesa","category":"Alimentação","expense_date":"${todayBR}","confidence":0.95}>>>
+      
+      Categorias permitidas: "Alimentação" | "Moradia" | "Transporte" | "Lazer" | "Saúde" | "Educação" | "Salário" | "Investimentos" | "Outros".
+      Tipos permitidos: "Despesa" | "Receita".
+      Formato de data obrigatório: DD/MM/YYYY.
+    `;
+
+    // 1. Monta o histórico anterior para o Gemini
+    const contents: any[] = history.map((msg) => ({
+      role: msg.role === "user" ? "user" : "model",
+      parts: [{ text: msg.text }],
+    }));
+
+    // 2. Monta a mensagem atual do usuário com anexo opcional
+    const currentParts: any[] = [{ text: message || "Analise esta despesa." }];
+
+    if (fileBuffer && mimeType) {
+      currentParts.push({
+        inlineData: {
+          mimeType: mimeType,
+          data: fileBuffer.toString("base64"),
+        },
+      });
+    }
+
+    contents.push({
+      role: "user",
+      parts: currentParts,
+    });
+
+    console.log("🤖 [AIService] Iniciando Streaming com Gemini Flash...");
+
+    // 3. Chamada de streaming
+    const responseStream = await ai.models.generateContentStream({
+      model: "gemini-3.5-flash-lite",
+      contents: contents,
+      config: {
+        systemInstruction: systemInstruction,
+      },
+    });
+
+    let fullText = "";
+
+    // 4. Itera sobre os pedaços (tokens) gerados pela IA e repassa para o callback
+    for await (const chunk of responseStream) {
+      const chunkText = chunk.text;
+      if (chunkText) {
+        fullText += chunkText;
+        onChunk(chunkText);
+      }
+    }
+
+    // 5. Tenta extrair a tag <<<EXPENSE_DATA:{...}>>> se existir
+    let expenseData: ExtractedExpense | null = null;
+    const match = fullText.match(/<<<EXPENSE_DATA:(\{.*?\})>>>/s);
+
+    if (match && match[1]) {
+      try {
+        const rawJson = JSON.parse(match[1]);
+        expenseData = extractedExpenseSchema.parse(rawJson);
+        console.log(
+          "✨ [AIService] Despesa estruturada extraída com sucesso:",
+          expenseData,
+        );
+      } catch (err) {
+        console.warn(
+          "⚠️ [AIService] Não foi possível validar o JSON da despesa emitido:",
+          err,
+        );
+      }
+    }
+
+    return { fullText, expenseData };
   },
 };
