@@ -22,8 +22,13 @@ export const mailWorker = new Worker(
   },
   {
     connection: redisConnection,
-    concurrency: 5, // Capacidade de processar até 5 e-mails simultâneos em paralelo!
+    concurrency: 1,
+    // Otimizações vitais para Upstash / Serverless Redis:
+    drainDelay: 30000,       // Se a fila estiver vazia, espera 30 segundos antes de checar de novo
+    stalledInterval: 300000, // Só checa jobs travados a cada 5 minutos (300s)
+    maxStalledCount: 1,
   }
+
 );
 
 mailWorker.on("completed", (job) => {
