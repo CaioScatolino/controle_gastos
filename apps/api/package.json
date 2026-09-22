@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch --env-file=.env src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
+    "build": "tsc --noEmit",
+    "start": "tsx src/server.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
@@ -26,6 +26,8 @@
     "mysql2": "^3.6.5",
     "nodemailer": "^10.0.10",
     "sharp": "^0.34.5",
+    "tsx": "^4.21.0",
+    "typescript": "^5.3.3",
     "zod": "^4.3.5"
   },
   "devDependencies": {
@@ -36,8 +38,6 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^20.10.6",
     "@types/nodemailer": "^8.0.2",
-    "drizzle-kit": "^0.31.8",
-    "tsx": "^4.21.0",
-    "typescript": "^5.3.3"
+    "drizzle-kit": "^0.31.8"
   }
 }
