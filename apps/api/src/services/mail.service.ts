@@ -10,7 +10,7 @@ export interface WelcomeMailDTO {
  * Suporta SMTP real via .env ou cria credenciais temporárias no Ethereal para dev.
  */
 async function getTransporter() {
-  // 1. Se houver SMTP real configurado
+  // 1. Se houver SMTP real configurado no .env, usa ele
   if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
     return nodemailer.createTransport({
       host: process.env.SMTP_HOST,
@@ -23,16 +23,14 @@ async function getTransporter() {
     });
   }
 
-  // 2. Se for ambiente de desenvolvimento local, tenta o Ethereal com timeout de 3s
+  // 2. Se estiver em PRODUÇÃO (Render) sem SMTP real, NUNCA tenta o Ethereal (ele trava)
+  if (process.env.NODE_ENV === "production") {
+    return null;
+  }
+
+  // 3. Apenas no localhost de desenvolvimento tenta o Ethereal
   try {
-    console.log("☁️  [MailService] Conectando ao Ethereal Email para simulação...");
-    const testAccountPromise = nodemailer.createTestAccount();
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error("Timeout")), 3500)
-    );
-
-    const testAccount = await Promise.race([testAccountPromise, timeoutPromise]);
-
+    const testAccount = await nodemailer.createTestAccount();
     return nodemailer.createTransport({
       host: "smtp.ethereal.email",
       port: 587,
@@ -43,8 +41,6 @@ async function getTransporter() {
       },
     });
   } catch (err) {
-    // 3. Fallback para ambientes em nuvem onde portas SMTP de teste são bloqueadas
-    console.warn("⚠️ [MailService] Servidor SMTP externo indisponível neste ambiente. Ativando simulador interno.");
     return null;
   }
 }
@@ -55,7 +51,9 @@ export const mailService = {
 
     // Se o transporter não estiver disponível (ex: bloqueio de rede no Render), simula o envio com sucesso
     if (!transporter) {
-      console.log(`\n📬 [MailService - Sandbox Nuvem] E-mail de boas-vindas simulado com sucesso!`);
+      console.log(
+        `\n📬 [MailService - Sandbox Nuvem] E-mail de boas-vindas simulado com sucesso!`,
+      );
       console.log(`👤 Destinatário: "${name}" <${email}>`);
       console.log(`🎉 Assunto: Bem-vindo ao Gastos.AI, ${name}!\n`);
       return;
@@ -110,7 +108,9 @@ export const mailService = {
       html: htmlContent,
     });
 
-    console.log(`\n📬 [MailService] E-mail despachado! Message ID: ${info.messageId}`);
+    console.log(
+      `\n📬 [MailService] E-mail despachado! Message ID: ${info.messageId}`,
+    );
 
     const previewUrl = nodemailer.getTestMessageUrl(info);
     if (previewUrl) {
@@ -118,4 +118,3 @@ export const mailService = {
     }
   },
 };
-
