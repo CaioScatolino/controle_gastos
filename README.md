@@ -91,7 +91,9 @@ Cada decisão técnica, arquitetural e comando executado é documentado detalhad
 - [Step 05: Envio de E-mails com Nodemailer e Templates HTML](docs/steps/step-05-envio-de-emails-com-nodemailer-e-templates.md)
 - [Step 06: IA Multimodal com Google Gemini, OCR e Extração Estruturada](docs/steps/step-06-ia-multimodal-gemini-ocr-extracao.md)
 - [Step 07: SSE Streaming no Chat de IA e Deploy 100% Gratuito em Produção](docs/steps/step-07-sse-streaming-e-deploy-producao.md)
-- **Step 08 (Próxima Sessão)**: Dashboard Mensal com Navegador Temporal (`< Mês/Ano >`), Filtros de Período e Análise por Categorias
+- [Step 08: Dashboard Mensal com Navegador Temporal e Breakdown de Categorias](docs/steps/step-08-dashboard-mensal-e-categorias.md)
+
+Confira também nosso planejamento completo no [**Roadmap de Evolução do Projeto**](docs/ROADMAP.md).
 
 
 ---
