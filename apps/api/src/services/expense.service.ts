@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { db } from "../db/connection";
 import { expenses, NewExpense, UpdateExpense } from "../db/schema";
 
@@ -39,18 +39,38 @@ export const createExpense = async (data: NewExpense) => {
 
 //======================== FUNÇÕES RELACIONADAS AO READ DE DESPESAS ========================
 
-export const getAllExpenses = async (user_id: number) => {
+export interface ExpenseFilters {
+  month?: number;
+  year?: number;
+}
+
+export const getAllExpenses = async (
+  user_id: number,
+  filters?: ExpenseFilters,
+) => {
   if (!user_id) {
     return null;
   }
 
-  const userAllExpenses = await db
+  const conditions = [eq(expenses.user_id, user_id), eq(expenses.status, true)];
+
+  if (filters?.month && filters?.year) {
+    const month = Number(filters.month);
+    const year = Number(filters.year);
+    const startDate = new Date(year, month - 1, 1, 0, 0, 0, 0);
+    const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+
+    conditions.push(gte(expenses.expense_date, startDate));
+    conditions.push(lte(expenses.expense_date, endDate));
+  }
+
+  const userExpenses = await db
     .select()
     .from(expenses)
-    .where(and(eq(expenses.user_id, user_id), eq(expenses.status, true)))
-    .orderBy(expenses.expense_date);
+    .where(and(...conditions))
+    .orderBy(desc(expenses.expense_date));
 
-  return userAllExpenses;
+  return userExpenses;
 };
 
 export const getExpenseById = async (id: number) => {

@@ -26,15 +26,17 @@ export const getAllExpenses: RequestHandler = async (req, res) => {
       .status(401)
       .json({ error: "Usuário não autenticado", data: null });
   }
-
-  const expenses = await expenseService.getAllExpenses(req.userId);
-
+  const { month, year } = req.query;
+  const filters = {
+    ...(month && { month: Number(month) }),
+    ...(year && { year: Number(year) }),
+  };
+  const expenses = await expenseService.getAllExpenses(req.userId, filters);
   if (!expenses) {
     return res
       .status(400)
       .json({ error: "Não foi possível buscar as despesas", data: null });
   }
-
   return res.status(200).json({ error: null, data: expenses });
 };
 

@@ -19,3 +19,10 @@ export interface NewExpensePayload {
   category: string;
   expense_date: string;
 }
+
+export interface CategoryTotal {
+  category: string;
+  total: number;
+  percentage: number;
+  count: number;
+}

@@ -9,7 +9,9 @@ import { useExpenses } from "@/hooks/useExpenses";
 
 // Componentes Modulares da Dashboard
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { MonthNavigator } from "@/components/dashboard/MonthNavigator";
 import { BalanceCard } from "@/components/dashboard/BalanceCard";
+import { CategoryBreakdown } from "@/components/dashboard/CategoryBreakdown";
 import { TransactionList } from "@/components/dashboard/TransactionList";
 import { NewTransactionModal } from "@/components/dashboard/NewTransactionModal";
 
@@ -23,9 +25,15 @@ export default function DashboardPage() {
     expenses,
     loading,
     refreshing,
+    selectedMonth,
+    selectedYear,
     saldoLiquido,
     totalReceitas,
     totalDespesas,
+    categoryBreakdown,
+    goToPreviousMonth,
+    goToNextMonth,
+    goToCurrentMonth,
     refresh,
     createExpense,
     deleteExpense,
@@ -57,12 +65,27 @@ export default function DashboardPage() {
           onLogout={handleLogout}
         />
 
+        {/* Navegação Temporal por Mês/Ano */}
+        <MonthNavigator
+          month={selectedMonth}
+          year={selectedYear}
+          onPrev={goToPreviousMonth}
+          onNext={goToNextMonth}
+          onToday={goToCurrentMonth}
+        />
+
         {/* Card de Saldo e Totais */}
         <BalanceCard
           saldo={saldoLiquido}
           receitas={totalReceitas}
           despesas={totalDespesas}
           onOpenModal={() => setIsModalOpen(true)}
+        />
+
+        {/* Gráfico/Progresso de Gastos por Categoria do Mês */}
+        <CategoryBreakdown
+          categories={categoryBreakdown}
+          totalDespesas={totalDespesas}
         />
 
         {/* Listagem de Transações com ação de exclusão */}
