@@ -16,15 +16,11 @@ Este documento estabelece as próximas etapas de engenharia, arquitetura e produ
 | **Step 06** | IA Multimodal & OCR | Google Gemini 2.5 Flash / Flash Lite, Extração JSON estruturada de fotos/recibos |
 | **Step 07** | SSE Streaming & Deploy Produção | Server-Sent Events (SSE), Deploy Vercel (Front) + Render (API), TiDB Cloud Serverless, UptimeRobot Heartbeat |
 | **Step 08** | Dashboard Mensal & Categorias | Navegação temporal `< Mês/Ano >`, Drizzle `gte/lte`, cálculo memoizado de categorias (`CategoryBreakdown`) |
+| **Step 09** | E-mails Reais com Resend | Resend HTTPS REST API, templates HTML responsivos, 0 risco de timeout SMTP na nuvem |
 
 ---
 
 ## 🚀 Próximas Etapas (Backlog Prioritário)
-
-### 📬 Step 09: Envio de E-mails Reais em Produção (Resend)
-- Substituir o sandbox do Ethereal por envio de e-mails transacionais reais via **Resend API**.
-- Entrega real de boas-vindas e relatórios na caixa de entrada do usuário.
-- Comunicação via HTTPS API (eliminando qualquer bloqueio de porta SMTP de nuvens gratuitas).
 
 ### ☸️ Step 10: Containerização & Orquestração (Docker & Kubernetes)
 - **Docker Multi-Stage**: Criação de imagens Docker leves e otimizadas para `apps/api` e `apps/web`.

@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 export interface WelcomeMailDTO {
   name: string;
@@ -6,11 +7,9 @@ export interface WelcomeMailDTO {
 }
 
 /**
- * Cria ou recupera o Transporter do Nodemailer.
- * Suporta SMTP real via .env ou cria credenciais temporárias no Ethereal para dev.
+ * Transporter do Nodemailer mantido como fallback (para desenvolvimento local sem chave de API).
  */
 async function getTransporter() {
-  // 1. Se houver SMTP real configurado no .env, usa ele
   if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
     return nodemailer.createTransport({
       host: process.env.SMTP_HOST,
@@ -23,12 +22,10 @@ async function getTransporter() {
     });
   }
 
-  // 2. Se estiver em PRODUÇÃO (Render) sem SMTP real, NUNCA tenta o Ethereal (ele trava)
   if (process.env.NODE_ENV === "production") {
     return null;
   }
 
-  // 3. Apenas no localhost de desenvolvimento tenta o Ethereal
   try {
     const testAccount = await nodemailer.createTestAccount();
     return nodemailer.createTransport({
@@ -47,18 +44,6 @@ async function getTransporter() {
 
 export const mailService = {
   async sendWelcomeEmail({ name, email }: WelcomeMailDTO): Promise<void> {
-    const transporter = await getTransporter();
-
-    // Se o transporter não estiver disponível (ex: bloqueio de rede no Render), simula o envio com sucesso
-    if (!transporter) {
-      console.log(
-        `\n📬 [MailService - Sandbox Nuvem] E-mail de boas-vindas simulado com sucesso!`,
-      );
-      console.log(`👤 Destinatário: "${name}" <${email}>`);
-      console.log(`🎉 Assunto: Bem-vindo ao Gastos.AI, ${name}!\n`);
-      return;
-    }
-
     const htmlContent = `
       <div style="background-color: #0B0E14; padding: 40px 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #E2E8F0;">
         <div style="max-width: 500px; margin: 0 auto; background-color: #121721; border-radius: 20px; border: 1px solid #252F42; overflow: hidden; padding: 32px;">
@@ -100,6 +85,57 @@ export const mailService = {
       </div>
     `;
 
+    // 1. Se RESEND_API_KEY estiver configurada, dispara o envio real via Resend API (HTTPS)
+    if (process.env.RESEND_API_KEY) {
+      try {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        console.log(
+          `☁️  [MailService] Enviando e-mail real via Resend API para ${email}...`,
+        );
+
+        const { data, error } = await resend.emails.send({
+          from: "Gastos.AI <onboarding@resend.dev>",
+          to: [email],
+          subject: `🎉 Bem-vindo ao Gastos.AI, ${name}!`,
+          html: htmlContent,
+        });
+
+        if (error) {
+          console.warn(`⚠️ [MailService - Resend Warning]:`, error.message);
+          // Dica importante da conta gratuita sem domínio personalizado:
+          if (
+            error.message?.includes("testing emails to your own email address")
+          ) {
+            console.log(
+              `💡 [Dica Resend]: Em contas gratuitas de teste (usando onboarding@resend.dev), o Resend só entrega para o e-mail da sua própria conta do Resend para evitar spam.`,
+            );
+          }
+        } else {
+          console.log(
+            `🚀 [MailService - Resend] E-mail real entregue com sucesso! ID: ${data?.id}`,
+          );
+          return;
+        }
+      } catch (err: any) {
+        console.error(
+          `💥 [MailService - Resend] Falha ao enviar via Resend:`,
+          err.message,
+        );
+      }
+    }
+
+    // 2. Fallback: Transporter Nodemailer (Ethereal em dev ou simulação em prod)
+    const transporter = await getTransporter();
+
+    if (!transporter) {
+      console.log(
+        `\n📬 [MailService - Sandbox Nuvem] E-mail de boas-vindas simulado com sucesso!`,
+      );
+      console.log(`👤 Destinatário: "${name}" <${email}>`);
+      console.log(`🎉 Assunto: Bem-vindo ao Gastos.AI, ${name}!\n`);
+      return;
+    }
+
     const info = await transporter.sendMail({
       from: '"Controle de Gastos" <nao-responda@gastos.ai>',
       to: `"${name}" <${email}>`,
@@ -109,7 +145,7 @@ export const mailService = {
     });
 
     console.log(
-      `\n📬 [MailService] E-mail despachado! Message ID: ${info.messageId}`,
+      `\n📬 [MailService] E-mail despachado via SMTP! Message ID: ${info.messageId}`,
     );
 
     const previewUrl = nodemailer.getTestMessageUrl(info);

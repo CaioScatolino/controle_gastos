@@ -92,6 +92,7 @@ Cada decisão técnica, arquitetural e comando executado é documentado detalhad
 - [Step 06: IA Multimodal com Google Gemini, OCR e Extração Estruturada](docs/steps/step-06-ia-multimodal-gemini-ocr-extracao.md)
 - [Step 07: SSE Streaming no Chat de IA e Deploy 100% Gratuito em Produção](docs/steps/step-07-sse-streaming-e-deploy-producao.md)
 - [Step 08: Dashboard Mensal com Navegador Temporal e Breakdown de Categorias](docs/steps/step-08-dashboard-mensal-e-categorias.md)
+- [Step 09: Envio de E-mails Reais em Produção com Resend API](docs/steps/step-09-envio-de-emails-reais-com-resend.md)
 
 Confira também nosso planejamento completo no [**Roadmap de Evolução do Projeto**](docs/ROADMAP.md).
 
