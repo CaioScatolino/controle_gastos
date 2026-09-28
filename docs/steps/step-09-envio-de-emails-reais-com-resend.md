@@ -32,9 +32,18 @@ Substituir o sandbox simulado/Ethereal por um serviço de e-mail transacional re
 ### 3. Variáveis de Ambiente
 - `RESEND_API_KEY` adicionada em `.env` e `.env.example`.
 
+### 4. Domínio Próprio e Entregabilidade Máxima (DNS & Reputação)
+- Verificado o domínio oficial `caioscatolino.com.br` no Resend na região de **São Paulo (sa-east-1)**.
+- Configurados os registros DNS de autoridade no Registro.br:
+  - **DKIM (`TXT resend._domainkey`)**: Assinatura criptográfica que atesta autenticidade.
+  - **SPF (`CNAME rsend` e `CNAME send`)**: Autorização explícita para disparo pelos servidores do Resend.
+  - **DMARC (`TXT _dmarc`)**: Política anti-spoofing que protege o domínio contra tentativas de phishing.
+- Atualizado o remetente oficial para: `Gastos.AI <nao-responda@caioscatolino.com.br>`.
+- Atualizados todos os links de login e autenticação no corpo do e-mail para `https://controle-gastos.caioscatolino.com.br/login`.
+
 ---
 
 ## 🧪 Validação
-- Realizado o cadastro de um usuário via front-end (`http://localhost:3000/register`).
-- O evento foi enfileirado no Redis e processado pelo Worker.
-- O e-mail de boas-vindas foi entregue com sucesso na caixa de entrada real.
+- Realizado o cadastro de usuário com domínio externo (ex: Gmail, Outlook).
+- O evento foi despachado via Outbox Pattern para o Redis/BullMQ.
+- O e-mail de boas-vindas foi entregue instantaneamente na caixa de entrada principal, assinado oficialmente por `@caioscatolino.com.br`.

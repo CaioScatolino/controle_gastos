@@ -17,12 +17,13 @@ Este documento estabelece as próximas etapas de engenharia, arquitetura e produ
 | **Step 07** | SSE Streaming & Deploy Produção | Server-Sent Events (SSE), Deploy Vercel (Front) + Render (API), TiDB Cloud Serverless, UptimeRobot Heartbeat |
 | **Step 08** | Dashboard Mensal & Categorias | Navegação temporal `< Mês/Ano >`, Drizzle `gte/lte`, cálculo memoizado de categorias (`CategoryBreakdown`) |
 | **Step 09** | E-mails Reais com Resend | Resend HTTPS REST API, templates HTML responsivos, 0 risco de timeout SMTP na nuvem |
+| **Step 10** | Domínio Próprio, PWA & Mobile | Domínio `caioscatolino.com.br`, DNS DKIM/SPF/DMARC, PWA instalável (`standalone`), Safe Area e Bottom Sheet |
 
 ---
 
 ## 🚀 Próximas Etapas (Backlog Prioritário)
 
-### ☸️ Step 10: Containerização & Orquestração (Docker & Kubernetes)
+### ☸️ Step 11: Containerização & Orquestração (Docker & Kubernetes)
 - **Docker Multi-Stage**: Criação de imagens Docker leves e otimizadas para `apps/api` e `apps/web`.
 - **Arquitetura de Microsserviços / Pods Separados**:
   - `api-deployment.yaml`: Pod dedicado para a API HTTP/SSE.
@@ -32,20 +33,20 @@ Este documento estabelece as próximas etapas de engenharia, arquitetura e produ
 - **Horizontal Pod Autoscaler (HPA)**: Auto-escalonamento automático baseado em uso de CPU/memória.
 - **Zero Impacto no Live Demo**: O deploy em produção continua ativo na Vercel/Render com custo R$ 0,00, mantendo a infraestrutura IaC versionada para portfólio corporativo.
 
-### 🎙️ Step 11: Despesas por Comando de Voz com IA (Áudio Multimodal)
+### 🎙️ Step 12: Despesas por Comando de Voz com IA (Áudio Multimodal)
 - Gravação de áudio nativa no navegador/celular via MediaRecorder API.
 - Processamento do áudio diretamente no Google Gemini (Multimodal Audio-to-JSON).
 - Exemplo: *"Gastei 35 reais no almoço de hoje no débito"* ➔ despesa cadastrada automaticamente com categoria, data e valor.
 
-### 🎯 Step 12: Metas & Orçamento Financeiro (Budgeting)
+### 🎯 Step 13: Metas & Orçamento Financeiro (Budgeting)
 - Definição de limites de gastos mensais gerais ou por categoria (ex: Alimentação máx R$ 800/mês).
 - Barra de progresso com alertas visuais: 🟢 Seguro (<70%), 🟡 Atenção (70-90%), 🔴 Estourado (>90%).
 - Insights do assistente de IA alertando sobre desvios do orçamento planejado.
 
-### 📄 Step 13: Exportação de Extratos (PDF & CSV)
+### 📄 Step 14: Exportação de Extratos (PDF & CSV)
 - Geração de relatório mensal consolidado para download em CSV (Excel) ou PDF estilizado.
 - Resumo de receitas, despesas, saldo líquido e gráfico de pizza/categorias.
 
-### 📱 Step 14: PWA (Progressive Web App)
-- Configuração de `manifest.json`, service worker e meta-tags para mobile.
-- Suporte a "Adicionar à Tela de Início" no Android e iOS, abrindo como aplicativo nativo em tela cheia.
+### 🏪 Step 15: TWA (Google Play Store Packaging via Bubblewrap)
+- Empacotamento do PWA em `.aab` / `.apk` usando Google Bubblewrap.
+- Preparação de assets e metadados para publicação na Google Play Store.
