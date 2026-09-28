@@ -7,23 +7,54 @@
   --background-start-rgb: 11, 14, 20;
 }
 
+html,
 body {
   color: rgb(var(--foreground-rgb));
-  background: #06080C;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: #06080c;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Remove o flash cinza/azul ao tocar em elementos no mobile */
+  -webkit-tap-highlight-color: transparent;
+
+  /* Trava o efeito elástico que desmonta o layout no iPhone */
+  overscroll-behavior-y: none;
 }
 
-/* Custom scrollbar for mobile experience */
+/* Garante rolagem com inércia física nos containers com scroll */
+.smooth-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Impede que o usuário selecione texto por engano ao tocar repetidamente */
+button,
+nav,
+header {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Utilitários para Safe Area do iPhone / Android */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Scrollbar minimalista e discreta */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #252F42;
+  background: #252f42;
   border-radius: 9999px;
 }

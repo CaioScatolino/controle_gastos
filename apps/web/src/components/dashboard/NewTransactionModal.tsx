@@ -63,13 +63,20 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
-      <div className="w-full sm:max-w-[400px] bg-surface-elevated rounded-t-3xl sm:rounded-3xl border border-surface-border p-6 shadow-2xl">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
+      {/* Container Drawer / Bottom Sheet */}
+      <div className="w-full sm:max-w-[420px] bg-surface-elevated rounded-t-[32px] sm:rounded-3xl border border-surface-border p-6 pb-safe shadow-2xl max-h-[90dvh] overflow-y-auto smooth-scroll animate-in slide-in-from-bottom duration-300">
+        {/* Handle Bar para UX de gaveta no mobile */}
+        <div className="w-12 h-1.5 bg-slate-600/40 rounded-full mx-auto mb-4 sm:hidden" />
+
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-bold text-white">Nova Transação</h3>
+          <h3 className="text-base font-bold text-white tracking-tight">
+            Nova Transação
+          </h3>
           <button
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-white"
+            className="p-1.5 rounded-full text-slate-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all"
+            aria-label="Fechar modal"
           >
             <X className="w-5 h-5" />
           </button>
@@ -81,35 +88,33 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Switch Receita / Despesa */}
           <div className="grid grid-cols-2 gap-2 p-1 bg-surface rounded-xl border border-surface-border">
             <button
               type="button"
               onClick={() => setType("Despesa")}
-              className={`py-2 text-xs font-semibold rounded-lg transition-all ${
-                type === "Despesa"
-                  ? "bg-rose-500 text-white shadow-sm"
+              className={`py-2.5 text-xs font-bold rounded-lg transition-all active:scale-95 ${type === "Despesa"
+                  ? "bg-rose-500 text-white shadow-md shadow-rose-500/20"
                   : "text-slate-400 hover:text-white"
-              }`}
+                }`}
             >
               Despesa
             </button>
             <button
               type="button"
               onClick={() => setType("Receita")}
-              className={`py-2 text-xs font-semibold rounded-lg transition-all ${
-                type === "Receita"
-                  ? "bg-emerald-500 text-white shadow-sm"
+              className={`py-2.5 text-xs font-bold rounded-lg transition-all active:scale-95 ${type === "Receita"
+                  ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
                   : "text-slate-400 hover:text-white"
-              }`}
+                }`}
             >
               Receita
             </button>
           </div>
 
           <div>
-            <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+            <label className="block text-[11px] font-semibold text-slate-400 mb-1.5">
               Descrição
             </label>
             <input
@@ -118,34 +123,35 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
               placeholder="Ex: Almoço, Salário, Mercado"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2.5 bg-surface rounded-xl border border-surface-border text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500"
+              className="w-full px-3.5 py-3 bg-surface rounded-xl border border-surface-border text-base sm:text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+              <label className="block text-[11px] font-semibold text-slate-400 mb-1.5">
                 Valor (R$)
               </label>
               <input
                 type="number"
                 step="0.01"
+                inputMode="decimal"
                 required
                 placeholder="0.00"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                className="w-full px-3 py-2.5 bg-surface rounded-xl border border-surface-border text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500"
+                className="w-full px-3.5 py-3 bg-surface rounded-xl border border-surface-border text-base sm:text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+              <label className="block text-[11px] font-semibold text-slate-400 mb-1.5">
                 Categoria
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-3 py-2.5 bg-surface rounded-xl border border-surface-border text-xs text-white focus:outline-none focus:border-brand-500"
+                className="w-full px-3.5 py-3 bg-surface rounded-xl border border-surface-border text-base sm:text-xs text-white focus:outline-none focus:border-brand-500 transition-colors appearance-none"
               >
                 <option value="Alimentação">Alimentação</option>
                 <option value="Moradia">Moradia</option>
@@ -160,11 +166,11 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
             </div>
           </div>
 
-          <div className="pt-2">
+          <div className="pt-2 pb-1">
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-600 active:scale-[0.98] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-lg shadow-brand-500/25"
+              className="w-full py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 active:scale-[0.98] text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-brand-500/25"
             >
               {submitting ? (
                 <>
