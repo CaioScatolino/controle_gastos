@@ -72,7 +72,7 @@ export const mailService = {
           </div>
 
           <div style="text-align: center; margin-bottom: 28px;">
-            <a href="https://controle-gastos-web-wheat.vercel.app/login" style="display: inline-block; background: #4F46E5; color: #FFFFFF; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 28px; border-radius: 12px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">
+            <a href="https://controle-gastos.caioscatolino.com.br/login" style="display: inline-block; background: #4F46E5; color: #FFFFFF; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 28px; border-radius: 12px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">
               Acessar Minha Conta →
             </a>
           </div>
@@ -94,7 +94,7 @@ export const mailService = {
         );
 
         const { data, error } = await resend.emails.send({
-          from: "Gastos.AI <onboarding@resend.dev>",
+          from: "Gastos.AI <nao-responda@caioscatolino.com.br>",
           to: [email],
           subject: `🎉 Bem-vindo ao Gastos.AI, ${name}!`,
           html: htmlContent,
@@ -102,14 +102,6 @@ export const mailService = {
 
         if (error) {
           console.warn(`⚠️ [MailService - Resend Warning]:`, error.message);
-          // Dica importante da conta gratuita sem domínio personalizado:
-          if (
-            error.message?.includes("testing emails to your own email address")
-          ) {
-            console.log(
-              `💡 [Dica Resend]: Em contas gratuitas de teste (usando onboarding@resend.dev), o Resend só entrega para o e-mail da sua própria conta do Resend para evitar spam.`,
-            );
-          }
         } else {
           console.log(
             `🚀 [MailService - Resend] E-mail real entregue com sucesso! ID: ${data?.id}`,
@@ -137,10 +129,10 @@ export const mailService = {
     }
 
     const info = await transporter.sendMail({
-      from: '"Controle de Gastos" <nao-responda@gastos.ai>',
+      from: '"Controle de Gastos" <nao-responda@caioscatolino.com.br>',
       to: `"${name}" <${email}>`,
       subject: `🎉 Bem-vindo ao Gastos.AI, ${name}!`,
-      text: `Olá, ${name}! Bem-vindo ao Gastos.AI. Sua conta foi criada com sucesso! Acesse em: https://controle-gastos-web-wheat.vercel.app/login`,
+      text: `Olá, ${name}! Bem-vindo ao Gastos.AI. Sua conta foi criada com sucesso! Acesse em: https://controle-gastos.caioscatolino.com.br/login`,
       html: htmlContent,
     });
 
