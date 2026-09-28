@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   title: "Controle de Gastos Inteligente",
   description:
     "Gestão financeira pessoal moderna, modular e mobile-first com IA multimodal.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Gastos.AI",
+  },
 };
 
 export const viewport: Viewport = {
