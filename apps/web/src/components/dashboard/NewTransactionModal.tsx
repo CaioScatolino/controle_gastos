@@ -24,6 +24,28 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Trava o scroll de fundo e restaura ao fechar o modal
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+
+  const handleClose = () => {
+    onClose();
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+    }
+  };
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,7 +76,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
       // Reset
       setDescription("");
       setValue("");
-      onClose();
+      handleClose();
     } catch (err: any) {
       setError(err.message || "Erro inesperado ao salvar.");
     } finally {
@@ -63,7 +85,12 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
+    <div 
+      onClick={(e) => {
+        if (e.target === e.currentTarget) handleClose();
+      }}
+      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200"
+    >
       {/* Container Drawer / Bottom Sheet */}
       <div className="w-full sm:max-w-[420px] bg-surface-elevated rounded-t-[32px] sm:rounded-3xl border border-surface-border p-6 pb-safe shadow-2xl max-h-[90dvh] overflow-y-auto smooth-scroll animate-in slide-in-from-bottom duration-300">
         {/* Handle Bar para UX de gaveta no mobile */}
@@ -74,7 +101,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
             Nova Transação
           </h3>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="p-1.5 rounded-full text-slate-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all"
             aria-label="Fechar modal"
           >
@@ -95,8 +122,8 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
               type="button"
               onClick={() => setType("Despesa")}
               className={`py-2.5 text-xs font-bold rounded-lg transition-all active:scale-95 ${type === "Despesa"
-                  ? "bg-rose-500 text-white shadow-md shadow-rose-500/20"
-                  : "text-slate-400 hover:text-white"
+                ? "bg-rose-500 text-white shadow-md shadow-rose-500/20"
+                : "text-slate-400 hover:text-white"
                 }`}
             >
               Despesa
@@ -105,8 +132,8 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
               type="button"
               onClick={() => setType("Receita")}
               className={`py-2.5 text-xs font-bold rounded-lg transition-all active:scale-95 ${type === "Receita"
-                  ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
-                  : "text-slate-400 hover:text-white"
+                ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
+                : "text-slate-400 hover:text-white"
                 }`}
             >
               Receita

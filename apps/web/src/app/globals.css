@@ -10,17 +10,13 @@
 html,
 body {
   color: rgb(var(--foreground-rgb));
-  background: #06080c;
+  background: #0b0e14; /* Cor idêntica ao fundo do app */
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
     Cantarell, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  /* Remove o flash cinza/azul ao tocar em elementos no mobile */
   -webkit-tap-highlight-color: transparent;
-
-  /* Trava o efeito elástico que desmonta o layout no iPhone */
   overscroll-behavior-y: none;
 }
 

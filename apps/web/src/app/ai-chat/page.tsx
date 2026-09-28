@@ -294,7 +294,7 @@ export default function AiChatPage() {
   };
 
   return (
-    <MobileContainer>
+    <MobileContainer className="h-[100dvh] max-h-[100dvh] overflow-hidden">
       <div className="flex-1 flex flex-col h-full bg-background overflow-hidden">
         {/* Top Header */}
         <div className="p-4 border-b border-surface-border flex items-center justify-between shrink-0 bg-surface/50 backdrop-blur-md">
