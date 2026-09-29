@@ -18,20 +18,29 @@ Este documento estabelece as próximas etapas de engenharia, arquitetura e produ
 | **Step 08** | Dashboard Mensal & Categorias | Navegação temporal `< Mês/Ano >`, Drizzle `gte/lte`, cálculo memoizado de categorias (`CategoryBreakdown`) |
 | **Step 09** | E-mails Reais com Resend | Resend HTTPS REST API, templates HTML responsivos, 0 risco de timeout SMTP na nuvem |
 | **Step 10** | Domínio Próprio, PWA & Mobile | Domínio `caioscatolino.com.br`, DNS DKIM/SPF/DMARC, PWA instalável (`standalone`), Safe Area e Bottom Sheet |
+| **FinOps / Resiliência** | Otimização TiDB & Outbox Event-Driven | Heartbeat sem banco, Outbox orientado a eventos (0ms) e redução de 98.4% nas consultas periódicas |
 
 ---
 
 ## 🚀 Próximas Etapas (Backlog Prioritário)
 
-### ☸️ Step 11: Containerização & Orquestração (Docker & Kubernetes)
-- **Docker Multi-Stage**: Criação de imagens Docker leves e otimizadas para `apps/api` e `apps/web`.
-- **Arquitetura de Microsserviços / Pods Separados**:
-  - `api-deployment.yaml`: Pod dedicado para a API HTTP/SSE.
-  - `worker-deployment.yaml`: Pod dedicado para o processamento assíncrono de filas BullMQ (desacoplamento de CPU).
-  - `web-deployment.yaml`: Pod do front-end Next.js.
-- **Sondas de Saúde (Liveness & Readiness Probes)**: Conectadas ao endpoint `/api/ping` para auto-recuperação de containers travados.
-- **Horizontal Pod Autoscaler (HPA)**: Auto-escalonamento automático baseado em uso de CPU/memória.
-- **Zero Impacto no Live Demo**: O deploy em produção continua ativo na Vercel/Render com custo R$ 0,00, mantendo a infraestrutura IaC versionada para portfólio corporativo.
+### ☸️ Step 11: Containerização & Orquestração (Docker & Kubernetes) [EM ANDAMENTO ⏳]
+- [x] **Docker Multi-Stage API (`deploy/docker/api.Dockerfile`)**: Imagem leve e segura baseada em Alpine Linux.
+- [x] **Docker Multi-Stage Web (`deploy/docker/web.Dockerfile`)**: Build Next.js 15 com `output: "standalone"`.
+- [x] **Docker Compose (`docker-compose.yml`)**: Orquestração local completa (MySQL, Redis, API, Worker, Web).
+- [x] **Kubernetes ConfigMaps & Secrets (`deploy/k8s/configmap-secrets.yaml`)**: Variáveis e segredos desacoplados.
+- [x] **Kubernetes API Deployment (`deploy/k8s/api-deployment.yaml`)**: 2 réplicas com Liveness/Readiness probes em `/api/ping` e Service ClusterIP.
+- [ ] **TODO: Kubernetes Worker Deployment (`deploy/k8s/worker-deployment.yaml`)**: Pod dedicado ao processamento assíncrono de filas BullMQ (desacoplamento de CPU).
+- [ ] **TODO: Kubernetes Web Deployment (`deploy/k8s/web-deployment.yaml`)**: Pod e Service do frontend Next.js 15 Standalone.
+- [ ] **TODO: Kubernetes HPA (`deploy/k8s/hpa.yaml`)**: Horizontal Pod Autoscaler baseado em consumo de CPU (2 a 5 pods).
+- [ ] **TODO: Commit & Push**: Subir alterações e acompanhar deploy no Render/Vercel.
+
+### 🛡️ Tratamento Semântico de Erros & Feedback Visual de UX
+- **Diagnóstico Mapeado**: Erros de regra de negócio (como *"Senha incorreta"* ou *"Usuário não encontrado"*) em `user.service.ts` são lançados como `new Error(...)` genérico. O middleware `globalErrorHandler` só repassa mensagens de instâncias de `AppError`, fazendo com que qualquer `Error` genérico caia no status HTTP 500 (*"Erro interno do servidor"*), ocultando o motivo real na tela do usuário.
+- **Melhorias Planejadas**:
+  - Migrar todas as exceções de regras de negócio para a classe `AppError(mensagem, statusCode)` (ex: `401 Unauthorized` para credenciais inválidas, `409 Conflict` para e-mail duplicado, `404 Not Found`).
+  - Padronizar mensagens de autenticação no login para *"E-mail ou senha incorretos"* (boa prática de segurança contra enumeração de usuários).
+  - Melhorar os alertas visuais de erro nos formulários do front-end Next.js (Login, Cadastro e Despesas).
 
 ### 🎙️ Step 12: Despesas por Comando de Voz com IA (Áudio Multimodal)
 - Gravação de áudio nativa no navegador/celular via MediaRecorder API.
