@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "../db/connection";
 import { NewUser, outbox_users, User, users } from "../db/schema";
 import bcrypt from "bcrypt";
+import { processOutboxQueue } from "../workers/outbox.relay";
 
 export const createUser = async (data: NewUser) => {
   // Passo 1 -> Verificar se o e-mail já existe
@@ -43,6 +44,12 @@ export const createUser = async (data: NewUser) => {
     return user;
   });
   const formattedUser = await formatUser(createdUser);
+
+  // Dispara o Outbox imediatamente em background (0ms de atraso e sem precisar de polling)
+  processOutboxQueue().catch((err) =>
+    console.error("Erro ao disparar outbox imediato:", err),
+  );
+
   return formattedUser;
 };
 

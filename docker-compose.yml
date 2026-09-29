@@ -1,0 +1,112 @@
+version: "3.8"
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:
+
+services:
+  # 1. Banco de Dados MySQL Relacional
+  mysql:
+    image: mysql:8.0
+    container_name: controle_gastos_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: controle_gastos
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # 2. Redis para Mensageria / BullMQ
+  redis:
+    image: redis:7-alpine
+    container_name: controle_gastos_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # 3. API RESTful & SSE
+  api:
+    build:
+      context: .
+      dockerfile: deploy/docker/api.Dockerfile
+    container_name: controle_gastos_api
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      NODE_ENV: production
+      DATABASE_URL: mysql://root:root@mysql:3306/controle_gastos
+      REDIS_URL: redis://redis:6379
+      BASE_URL: http://localhost:3001
+      JWT_SECRET: super_secret_jwt_token_local_development
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # 4. Worker Assíncrono BullMQ (Processamento Desacoplado da API)
+  worker:
+    build:
+      context: .
+      dockerfile: deploy/docker/api.Dockerfile
+    container_name: controle_gastos_worker
+    restart: always
+    command: ["npx", "tsx", "src/workers/mail.worker.ts"]
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: mysql://root:root@mysql:3306/controle_gastos
+      REDIS_URL: redis://redis:6379
+      RESEND_API_KEY: ${RESEND_API_KEY}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # 5. Front-end Next.js 15 Standalone
+  web:
+    build:
+      context: .
+      dockerfile: deploy/docker/web.Dockerfile
+    container_name: controle_gastos_web
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    depends_on:
+      - api
+    networks:
+      - app-network

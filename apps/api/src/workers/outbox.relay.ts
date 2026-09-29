@@ -48,10 +48,14 @@ export async function processOutboxQueue() {
   }
 }
 
-// Inicia o loop para verificar a cada 5 segundos
+// Inicia o loop de segurança (fallback espaçado para não drenar RUs do TiDB)
 export function startOutboxRelay() {
   console.log(
-    "⚙️  [Outbox Relay] Monitoramento da tabela outbox_users iniciado (intervalo: 5s)...",
+    "⚙️  [Outbox Relay] Monitoramento da outbox iniciado (Modo Inteligente / Baixo Consumo)...",
   );
-  setInterval(processOutboxQueue, 5000);
+  // Executa uma vez na inicialização
+  processOutboxQueue();
+
+  // Executa apenas como fallback a cada 5 minutos (300.000 ms) em vez de 5s
+  setInterval(processOutboxQueue, 5 * 60 * 1000);
 }

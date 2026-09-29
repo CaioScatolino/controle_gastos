@@ -9,15 +9,20 @@ import { privateRoute } from "../middlewares/auth.middleware";
 
 const router = Router();
 
-// Rota de Healthcheck / Heartbeat: Mantém o Render acordado e o MySQL quente
+// Rota de Healthcheck / Heartbeat: Mantém o Render acordado SEM gastar cota do TiDB
 router.get("/ping", async (req: Request, res: Response) => {
-  try {
-    // Roda um SELECT 1 para manter o pool do MySQL ativo
-    await db.execute(sql`SELECT 1`);
-    res.json({ pong: true, database: "online" });
-  } catch (err) {
-    res.json({ pong: true, database: "reconnecting" });
+  // Se quiser testar o banco explicitamente, chame /api/ping?checkDb=true
+  if (req.query.checkDb === "true") {
+    try {
+      await db.execute(sql`SELECT 1`);
+      return res.json({ pong: true, database: "online" });
+    } catch (err) {
+      return res.status(500).json({ pong: true, database: "offline" });
+    }
   }
+
+  // Resposta ultra-leve em memória para o UptimeRobot (0 RUs gastas no TiDB)
+  res.json({ pong: true, status: "alive" });
 });
 
 router.get("/", (req: Request, res: Response) => {
