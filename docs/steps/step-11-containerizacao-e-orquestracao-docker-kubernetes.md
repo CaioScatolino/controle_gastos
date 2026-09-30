@@ -67,7 +67,116 @@ Durante a preparação dos probes de monitoramento para o Kubernetes, foi identi
 
 ---
 
-## 🧪 Validação & Próximos Passos
+## 🚀 Guia de Operação Prática (Runbook para VPS & Local)
+
+Guarde este passo a passo para quando for ligar a aplicação no seu computador ou numa VPS alugada (Ubuntu/Debian).
+
+### 🐳 Opção 1: Subindo com Docker Compose (Mais Rápido e Simples)
+
+Ideal para testes locais rápidos ou para rodar numa VPS mais enxuta (1GB a 2GB de RAM) sem a complexidade do cluster K8s.
+
+1. **Clonar o projeto e entrar na pasta:**
+   ```bash
+   git clone https://github.com/CaioScatolino/controle_gastos.git
+   cd controle_gastos
+   ```
+
+2. **Criar o arquivo de variáveis de ambiente (`.env`) na raiz:**
+   ```bash
+   # Crie o .env com as chaves reais das APIs
+   RESEND_API_KEY=re_sua_chave_real_aqui
+   GEMINI_API_KEY=AQ_sua_chave_real_aqui
+   ```
+
+3. **Construir as imagens e subir os 5 serviços em segundo plano:**
+   ```bash
+   docker compose up -d --build
+   ```
+
+4. **Verificar se todos os contêineres estão rodando e saudáveis:**
+   ```bash
+   docker compose ps
+   ```
+
+5. **Acompanhar os logs em tempo real:**
+   ```bash
+   # Ver logs de todos os serviços:
+   docker compose logs -f
+
+   # Ou ver apenas os logs da API ou do Worker:
+   docker compose logs -f api
+   docker compose logs -f worker
+   ```
+
+6. **Parar a aplicação:**
+   ```bash
+   docker compose down
+   ```
+
+---
+
+### ☸️ Opção 2: Subindo com Kubernetes (K3s na VPS - Arquitetura Enterprise)
+
+Ideal para quando você tiver uma VPS com **pelo menos 4GB de RAM** e quiser a experiência completa de orquestração com auto-recuperação (Self-Healing) e auto-escalonamento (HPA).
+
+1. **Instalar o K3s no servidor Linux (com 1 único comando):**
+   ```bash
+   curl -sfL https://get.k3s.io | sh -
+   ```
+   *(Ele já instala o Kubernetes leve, o `kubectl` e configura tudo automaticamente).*
+
+2. **Construir as imagens Docker no servidor:**
+   ```bash
+   # Build da API (usada tanto pela API quanto pelo Worker)
+   docker build -t controle-gastos-api:latest -f deploy/docker/api.Dockerfile .
+
+   # Build do Front-end Web Standalone
+   docker build -t controle-gastos-web:latest -f deploy/docker/web.Dockerfile .
+   ```
+
+3. **Criar os Segredos de forma 100% segura (sem expor chaves no Git):**
+   ```bash
+   kubectl create secret generic app-secrets \
+     --from-literal=DATABASE_URL="sua_url_real_mysql_ou_tidb" \
+     --from-literal=REDIS_URL="sua_url_real_redis" \
+     --from-literal=JWT_SECRET="seu_jwt_secret_forte" \
+     --from-literal=RESEND_API_KEY="re_sua_chave_real" \
+     --from-literal=GEMINI_API_KEY="AQ_sua_chave_real"
+   ```
+
+4. **Aplicar os manifestos do Kubernetes:**
+   ```bash
+   # Aplica o ConfigMap de configurações públicas
+   kubectl apply -f deploy/k8s/configmap-secrets.yaml
+
+   # Aplica a API, Worker, Web e HPA
+   kubectl apply -f deploy/k8s/api-deployment.yaml
+   kubectl apply -f deploy/k8s/worker-deployment.yaml
+   kubectl apply -f deploy/k8s/web-deployment.yaml
+   kubectl apply -f deploy/k8s/hpa.yaml
+   ```
+
+5. **Verificar os Pods e Serviços subindo:**
+   ```bash
+   # Ver os pods em execução:
+   kubectl get pods
+
+   # Ver os serviços e portas:
+   kubectl get services
+
+   # Ver o monitoramento do HPA:
+   kubectl get hpa
+   ```
+
+6. **Ver logs de um pod específico em tempo real:**
+   ```bash
+   kubectl logs -f deployment/api-deployment
+   kubectl logs -f deployment/worker-deployment
+   ```
+
+---
+
+## 🧪 Validação & Status Atual
 - Toda a infraestrutura declarativa (IaC) está versionada em `deploy/k8s/` e `docker-compose.yml`.
 - A aplicação local e os ambientes corporativos podem subir a stack inteira de forma automatizada.
 - Os deploys em produção na Vercel e Render continuam ativos e sem custo (R$ 0,00), com consumo de TiDB drasticamente otimizado.

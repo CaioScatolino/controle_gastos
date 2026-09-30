@@ -94,14 +94,29 @@ Cada decisão técnica, arquitetural e comando executado é documentado detalhad
 - [Step 08: Dashboard Mensal com Navegador Temporal e Breakdown de Categorias](docs/steps/step-08-dashboard-mensal-e-categorias.md)
 - [Step 09: Envio de E-mails Reais em Produção com Resend API](docs/steps/step-09-envio-de-emails-reais-com-resend.md)
 - [Step 10: Domínio Próprio, PWA Instalável e Ergonomia Mobile](docs/steps/step-10-pwa-dominio-proprio-e-ergonomia-mobile.md)
+- [Step 11: Containerização & Orquestração (Docker & Kubernetes)](docs/steps/step-11-containerizacao-e-orquestracao-docker-kubernetes.md)
 
 Confira também nosso planejamento completo no [**Roadmap de Evolução do Projeto**](docs/ROADMAP.md).
 
+---
+
+## 🐳 Executando com Docker Compose ou Kubernetes
+
+O projeto possui infraestrutura declarativa completa para rodar localmente ou em VPS:
+
+```bash
+# Subir todo o ecossistema localmente (MySQL, Redis, API, Worker e Web):
+docker compose up -d --build
+
+# Ou aplicar os manifestos do Kubernetes:
+kubectl apply -f deploy/k8s/
+```
+Consulte o [Guia de Operação Prática (Runbook)](docs/steps/step-11-containerizacao-e-orquestracao-docker-kubernetes.md#🚀-guia-de-operação-prática-runbook-para-vps--local) para o passo a passo detalhado de VPS.
 
 ---
 
 ## 🌐 Demonstração Online (Produção)
-- **Web App (Vercel)**: [https://controle-gastos-web-wheat.vercel.app](https://controle-gastos-web-wheat.vercel.app)
+- **Web App Oficial (PWA / Domínio Próprio)**: [https://controle-gastos.caioscatolino.com.br](https://controle-gastos.caioscatolino.com.br)
 - **API REST & SSE (Render)**: [https://controle-gastos-api-glpv.onrender.com](https://controle-gastos-api-glpv.onrender.com)
 
 
