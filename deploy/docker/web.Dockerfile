@@ -25,6 +25,8 @@ COPY . .
 # Desabilita telemetria do Next.js para acelerar o build
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+ARG NEXT_PUBLIC_API_URL=https://api-gastos.caioscatolino.com.br/api
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 # Executa o build que gera a pasta .next/standalone
 RUN npm run build --workspace=@controle-gastos/web

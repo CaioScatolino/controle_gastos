@@ -1,7 +1,16 @@
 import { authStorage } from "./auth";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+export function getApiBaseUrl(): string {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  if (typeof window !== "undefined") {
+    if (window.location.hostname.includes("caioscatolino.com.br")) {
+      return "https://api-gastos.caioscatolino.com.br/api";
+    }
+  }
+  return "http://localhost:3001/api";
+}
 
 export interface ApiResponse<T = any> {
   error: string | null;
@@ -30,7 +39,7 @@ export async function apiFetch<T = any>(
   const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
 
   try {
-    const response = await fetch(`${API_BASE_URL}${cleanEndpoint}`, {
+    const response = await fetch(`${getApiBaseUrl()}${cleanEndpoint}`, {
       ...options,
       headers,
     });
