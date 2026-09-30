@@ -1,0 +1,19 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-hpa
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-deployment # O alvo que ele vai vigiar
+  minReplicas: 2 # Nunca roda menos que 2 réplicas (alta disponibilidade)
+  maxReplicas: 5 # Pode subir até 5 réplicas se houver uma explosão de acessos
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70 # Se a média de CPU passar de 70%, escala novos pods!

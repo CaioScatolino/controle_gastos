@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deployment
+  namespace: default
+  labels:
+    app: controle-gastos-worker
+spec:
+  replicas: 1 # Inicia com 1 réplica (pode escalar caso a fila cresça)
+  selector:
+    matchLabels:
+      app: controle-gastos-worker
+  template:
+    metadata:
+      labels:
+        app: controle-gastos-worker
+    spec:
+      containers:
+        - name: worker
+          image: controle-gastos-api:latest # Mesma imagem leve da API
+          imagePullPolicy: IfNotPresent
+          # Sobrescreve o CMD padrão da API para rodar apenas o Worker da fila
+          command: ["npx", "tsx", "src/workers/mail.worker.ts"]
+          # Injeta as variáveis de ambiente necessárias para Redis e Resend
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secrets
+          # Limites de recursos para proteger o cluster de picos de consumo
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"

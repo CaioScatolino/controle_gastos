@@ -1,6 +1,6 @@
 # Step 11: Containerização & Orquestração (Docker & Kubernetes)
 
-> **Status Atual:** ⏳ Em Andamento (Pausado — TODOs mapeados para retomada)
+> **Status:** ✅ Concluído
 
 ---
 
@@ -61,14 +61,13 @@ Durante a preparação dos probes de monitoramento para o Kubernetes, foi identi
 
 ---
 
-## 📋 TODOs para Retomada (Passos Finais)
+- [x] **Criar `deploy/k8s/worker-deployment.yaml`**: Pod dedicado para os workers do BullMQ (desacoplamento de threads e isolamento de CPU).
+- [x] **Criar `deploy/k8s/web-deployment.yaml`**: Pod com 2 réplicas e Service ClusterIP do front-end Next.js 15 Standalone.
+- [x] **Criar `deploy/k8s/hpa.yaml`**: Horizontal Pod Autoscaler escalando dinamicamente a API (de 2 até 5 réplicas) quando o consumo de CPU ultrapassar 70%.
 
-- [ ] **Criar `deploy/k8s/worker-deployment.yaml`**:
-  - Pod dedicado para os workers do BullMQ (desacoplamento de threads e tarefas assíncronas).
-- [ ] **Criar `deploy/k8s/web-deployment.yaml`**:
-  - Pod e Service do frontend Next.js 15 Standalone.
-- [ ] **Criar `deploy/k8s/hpa.yaml`**:
-  - Horizontal Pod Autoscaler configurado para escalar a API dinamicamente (de 2 até 5 réplicas) quando o consumo de CPU ultrapassar 70%.
-- [ ] **Validação & Deploy**:
-  - Commitar as melhorias de FinOps (TiDB) e os manifestos de infraestrutura IaC.
-  - Fazer push para a branch `main` e acompanhar a atualização contínua no Render e Vercel.
+---
+
+## 🧪 Validação & Próximos Passos
+- Toda a infraestrutura declarativa (IaC) está versionada em `deploy/k8s/` e `docker-compose.yml`.
+- A aplicação local e os ambientes corporativos podem subir a stack inteira de forma automatizada.
+- Os deploys em produção na Vercel e Render continuam ativos e sem custo (R$ 0,00), com consumo de TiDB drasticamente otimizado.

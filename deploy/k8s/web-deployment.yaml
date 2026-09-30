@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+  namespace: default
+  labels:
+    app: controle-gastos-web
+spec:
+  replicas: 2 # 2 instâncias do front-end balanceadas
+  selector:
+    matchLabels:
+      app: controle-gastos-web
+  template:
+    metadata:
+      labels:
+        app: controle-gastos-web
+    spec:
+      containers:
+        - name: web
+          image: controle-gastos-web:latest # Imagem gerada pelo web.Dockerfile standalone
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: NODE_ENV
+              value: "production"
+            # Aponta para a API (em produção usa a URL pública ou o Ingress)
+            - name: NEXT_PUBLIC_API_URL
+              value: "https://controle-gastos-api-glpv.onrender.com"
+          # Sonda de Liveness: Garante que o servidor Node.js do Next.js está vivo
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          # Sonda de Readiness: Só recebe tráfego quando o Next.js estiver pronto
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          # Limites de recursos para proteger o cluster
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+# Service: Balanceador de Carga Interno do Front-end
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-service
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: controle-gastos-web
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
