@@ -34,9 +34,10 @@ COPY --chown=node:node --from=base /app/node_modules ./node_modules
 COPY --chown=node:node --from=base /app/package.json ./package.json
 COPY --chown=node:node --from=base /app/apps/api/package.json ./apps/api/package.json
 
-# Copia o código-fonte da API
+# Copia o código-fonte da API e migrações
 COPY --chown=node:node apps/api/src ./apps/api/src
 COPY --chown=node:node apps/api/tsconfig.json ./apps/api/tsconfig.json
+COPY --chown=node:node apps/api/drizzle.config.ts ./apps/api/drizzle.config.ts
 
 WORKDIR /app/apps/api
 
