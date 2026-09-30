@@ -32,7 +32,6 @@ USER node
 # Copia as dependências preparadas no estágio anterior com permissão do usuário node
 COPY --chown=node:node --from=base /app/node_modules ./node_modules
 COPY --chown=node:node --from=base /app/package.json ./package.json
-COPY --chown=node:node --from=base /app/apps/api/node_modules ./apps/api/node_modules
 COPY --chown=node:node --from=base /app/apps/api/package.json ./apps/api/package.json
 
 # Copia o código-fonte da API
