@@ -44,7 +44,7 @@ async function getTransporter() {
 
 export const mailService = {
   async sendWelcomeEmail({ name, email }: WelcomeMailDTO): Promise<void> {
-    const appUrl = (process.env.APP_URL || process.env.BASE_URL || "https://gastos.caioscatolino.com.br").replace(/\/$/, "");
+    const appUrl = (process.env.APP_URL || process.env.FRONTEND_URL || "https://gastos.caioscatolino.com.br").replace(/\/$/, "");
     const loginUrl = `${appUrl}/login`;
 
     const htmlContent = `
