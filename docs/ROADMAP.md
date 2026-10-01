@@ -20,6 +20,7 @@ Este documento estabelece as próximas etapas de engenharia, arquitetura e produ
 | **Step 10** | Domínio Próprio, PWA & Mobile | Domínio `caioscatolino.com.br`, DNS DKIM/SPF/DMARC, PWA instalável (`standalone`), Safe Area e Bottom Sheet |
 | **FinOps / Resiliência** | Otimização TiDB & Outbox Event-Driven | Heartbeat sem banco, Outbox orientado a eventos (0ms) e redução de 98.4% nas consultas periódicas |
 | **Step 11** | Containerização & Kubernetes | Docker Multi-Stage (API & Web Standalone), Docker Compose, Pods desacoplados (API, Worker, Web), Probes e HPA |
+| **Deploy VPS & CI/CD** | Hub Central de Portfólio & Auto-Deploy | VPS Hostinger (Ubuntu 24.04, 2GB SWAP), Nginx Proxy Manager, MySQL/Redis Centrais, SSL Let's Encrypt e GitHub Actions CI/CD |
 
 ---
 

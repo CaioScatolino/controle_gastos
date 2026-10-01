@@ -116,7 +116,9 @@ Consulte o [Guia de Operação Prática (Runbook)](docs/steps/step-11-containeri
 ---
 
 ## 🌐 Demonstração Online (Produção)
-- **Web App Oficial (PWA / Domínio Próprio)**: [https://controle-gastos.caioscatolino.com.br](https://controle-gastos.caioscatolino.com.br)
-- **API REST & SSE (Render)**: [https://controle-gastos-api-glpv.onrender.com](https://controle-gastos-api-glpv.onrender.com)
+- **Web App Oficial (VPS Hostinger + Docker + SSL)**: [https://gastos.caioscatolino.com.br](https://gastos.caioscatolino.com.br)
+- **API REST & SSE (VPS)**: [https://api-gastos.caioscatolino.com.br](https://api-gastos.caioscatolino.com.br)
+- **Web App Serverless (Vercel)**: [https://controle-gastos.caioscatolino.com.br](https://controle-gastos.caioscatolino.com.br)
+- **Deploy Automático**: Pipeline CI/CD ativo via GitHub Actions a cada `push` na branch `main`.
 
 
