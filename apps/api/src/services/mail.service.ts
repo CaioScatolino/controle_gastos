@@ -44,6 +44,9 @@ async function getTransporter() {
 
 export const mailService = {
   async sendWelcomeEmail({ name, email }: WelcomeMailDTO): Promise<void> {
+    const appUrl = (process.env.APP_URL || process.env.BASE_URL || "https://gastos.caioscatolino.com.br").replace(/\/$/, "");
+    const loginUrl = `${appUrl}/login`;
+
     const htmlContent = `
       <div style="background-color: #0B0E14; padding: 40px 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #E2E8F0;">
         <div style="max-width: 500px; margin: 0 auto; background-color: #121721; border-radius: 20px; border: 1px solid #252F42; overflow: hidden; padding: 32px;">
@@ -72,7 +75,7 @@ export const mailService = {
           </div>
 
           <div style="text-align: center; margin-bottom: 28px;">
-            <a href="https://controle-gastos.caioscatolino.com.br/login" style="display: inline-block; background: #4F46E5; color: #FFFFFF; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 28px; border-radius: 12px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">
+            <a href="${loginUrl}" style="display: inline-block; background: #4F46E5; color: #FFFFFF; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 28px; border-radius: 12px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">
               Acessar Minha Conta →
             </a>
           </div>
@@ -132,7 +135,7 @@ export const mailService = {
       from: '"Controle de Gastos" <nao-responda@caioscatolino.com.br>',
       to: `"${name}" <${email}>`,
       subject: `🎉 Bem-vindo ao Gastos.AI, ${name}!`,
-      text: `Olá, ${name}! Bem-vindo ao Gastos.AI. Sua conta foi criada com sucesso! Acesse em: https://controle-gastos.caioscatolino.com.br/login`,
+      text: `Olá, ${name}! Bem-vindo ao Gastos.AI. Sua conta foi criada com sucesso! Acesse em: ${loginUrl}`,
       html: htmlContent,
     });
 
