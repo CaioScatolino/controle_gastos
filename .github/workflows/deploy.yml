@@ -1,0 +1,35 @@
+name: 🚀 Deploy Contínuo (CI/CD) para VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy na VPS Hostinger
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Conectar via SSH e Atualizar Contêineres
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            echo "🚀 [CI/CD] Iniciando atualização na VPS..."
+            cd /root/apps/controle_gastos
+            
+            echo "📥 [CI/CD] Puxando alterações do Git..."
+            git pull origin main
+            
+            echo "🐳 [CI/CD] Recompilando e reiniciando contêineres..."
+            docker compose -f docker-compose.prod.yml up -d --build
+            
+            echo "🧹 [CI/CD] Limpando imagens antigas órfãs..."
+            docker image prune -f
+            
+            echo "✅ [CI/CD] Deploy finalizado com sucesso na VPS!"
